@@ -1,0 +1,136 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="{% static 'wasco/images/wasco.ico' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'wasco/css/style.css' %}">
+    <title>Wasco</title>
+
+    <style>
+        .orange{
+            background-color: orange;
+            color: orange;
+        }
+        .yellow{
+            background-color: yellow;
+            color: yellow;
+            /* yellow class has to be added */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <h4>Konteynerlər</h4>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <tr>
+                            <th>No</th>
+                            <th>Cihaz ID</th>
+                            <th>Batareya gərginliyi (%)</th>
+                            <th>Doluluq Faizi (%)</th>
+                        </tr>
+                           <!-- {{object_list}} -->
+                            {% for obj in object_list %}
+                            <tr>
+                                <td>{{ obj.text.0 }}</td>
+                                <td>{{ obj.text.1 }}</td>
+                                <td>{{ obj.text.2 }} %</td>
+                                <td>{{ obj.text.3 }} %
+                                    <div class="progress" style="height: 7px;">
+                                        <div class="progress-bar {{ obj.battery }}" role="progressbar" style="width: {{ obj.text.3 }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        
+                            <!-- {% for obj in object_list %}
+                            <tr>
+                                {% for item in obj.text %}
+                                    <td>{{ item }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %} -->
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                <div id="map"></div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!-- just for testing -->
+
+    <script>
+        function initMap() {
+            //Map options
+            var options = {
+                zoom: 23,
+                center: { lat: 40.453191, lng: 50.070035 }
+            }
+            	
+            //New map
+            var map = new google.maps.Map(document.getElementById('map'), options);
+
+            //Add marker
+            var marker = new google.maps.Marker({
+                position: { lat: 42.4668, lng: -70.9495 },
+                map: map,
+                icon: "{% static 'wasco/images/green.png' %}"
+            });
+
+            marker.addListener('mouseover', function () {
+                infoWindow.open(map, marker);
+            });
+
+
+            {% for obj in object_list %}
+            addMarker({{ obj.coords | safe }}, '{{ obj.text }}', '{{ obj.device_icon }}');
+        {% endfor %}
+        // // Add Marker function
+        function addMarker(coords, text, device_icon) {
+            var marker = new google.maps.Marker({
+                position: coords,
+                map: map,
+                icon: device_icon
+            });
+
+            var infoWindow = new google.maps.InfoWindow({
+                content: text
+            });
+
+            marker.addListener('click', function () {
+                infoWindow.open(map, marker);
+            });
+        }
+
+        }
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHBogTzzKWBngIxwUwHV_VbQX9rHuL0ZE&callback=initMap">
+        </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
